@@ -1,14 +1,7 @@
 import copy
 import random
-import math
-
-from pgmpy.estimators import BicScore
-import pandas as pd
-import numpy as np
-import networkx as nx
-import matplotlib.pyplot as plt
-from more_itertools import sort_together
 from algo_tools import *
+from mdl_scorer import MDL_Scorer
 
 """
 def merge(list_of_networks):

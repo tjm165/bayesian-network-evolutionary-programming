@@ -1,13 +1,8 @@
 import copy
 import random
-import math
-
-from pgmpy.estimators import BicScore
 import pandas as pd
-import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from more_itertools import sort_together
 
 
 def check_for_self_pointers(matrix):
