@@ -3,24 +3,26 @@ import random
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
+import random
 
+"""
+Problems with check for self pointers
+First off this run time is crazy. This effects create population
+Second off, the mutations need to do a check.
 
-def check_for_self_pointers(matrix):
-    for i in range(len(matrix)):
-        if matrix[i][i] == 1:
-            matrix[i][i] = 0
+"""
 
 
 class network:
-    def __init__(self, matrix, var_names):
+    def __init__(self, matrix, var_names, marker="", parent=None):
         """
         matrix is [parents_of_node, parents_of_node, ...]
         """
 
-        check_for_self_pointers(matrix)
-
         self.matrix = pd.DataFrame(matrix)
         self.var_names = var_names
+        self.marker = ""
+        self.parent = parent
 
     def node_names(self, nodes):
         if isinstance(nodes, list):
@@ -36,10 +38,11 @@ class network:
     def num_nodes(self):
         return len(self.var_names)
 
-    def get_node(i, j=None):
-        if j is None:
-            return self.matrix.item(i)
-        return self.item((i, j))
+    def num_edges(self):
+        return self.num_nodes() ** 2
+
+    def get_edge(self, i, j):
+        return self.matrix.iloc[i, j]
 
     def get_parents(self, i):
         """
@@ -56,26 +59,49 @@ class network:
         return parents
 
     def mutate(self):
-        mutations = [network.__delete_edge]
+        mutations = [network.__delete_edge,
+                     network.__add_edge, network.__reverse_edge]
         num_nodes = len(self.matrix)
 
         node = random.randint(0, num_nodes - 1)
         parent = random.randint(0, num_nodes - 1)
         mutation = random.randint(0, len(mutations) - 1)
 
-        return mutations[mutation](self, node, parent)
+        mutated, success = None, False
+        # while not success:
+        mutated, success = mutations[mutation](self, node, parent)
+        mutated.parent = self
+
+        return mutated
 
     def copy(self):
         return network(copy.deepcopy(self.matrix), self.var_names)
 
     def __delete_edge(self, node, parent):
-        network2 = self.copy()
-        network2.matrix[node][parent] = 0
-        return network2
+        if node != parent:
+            network2 = self.copy()
+            network2.matrix[node][parent] = 0
+            return network2, True
+        return self, False
+
+    def __add_edge(self, node, parent):
+        if node != parent:
+            network2 = self.copy()
+            network2.matrix[node][parent] = 1
+            return network2, True
+        return self, False
+
+    def __reverse_edge(self, node, parent):
+        if node != parent:
+            network2 = self.copy()
+            network2.matrix[node][parent] = 0
+            network2.matrix[parent][node] = 1
+            return network2, True
+        return self, False
 
     def draw(self):
-        #matrix = pd.DataFrame([[0, 1, 1], [0, 0, 0], [0, 0, 0]])
-        #var_names = ['A', 'B', 'C']
+        # matrix = pd.DataFrame([[0, 1, 1], [0, 0, 0], [0, 0, 0]])
+        # var_names = ['A', 'B', 'C']
         matrix = self.matrix
         var_names = self.var_names
 
