@@ -1,3 +1,6 @@
+# Description
+Using the Evolutionary Programming approach to learn a Bayesian Network. Final project for Probabilistic Models at Case Western Reserve University.
+
 # Files in this Project
 
 ## root
